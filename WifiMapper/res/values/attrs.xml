@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="DotSquareView">
+        <attr name="dot_radius" format="integer"></attr>
+        <attr name="dot_ring_color" format="color"></attr>
+    </declare-styleable>
+    
+    <item name="DotSquareView_dot_radius_default" type="fraction">10%</item>
+    <item name="DotSquareView_dot_ring_color_default" type="color">#000000</item>
+</resources>
