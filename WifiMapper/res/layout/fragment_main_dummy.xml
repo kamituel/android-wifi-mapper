@@ -16,50 +16,39 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_below="@id/dotView" >
-        
-        <LinearLayout 
-            android:layout_width="match_parent" 
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            
-            <Button 
-                android:id="@+id/dimension3Button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="3x3"
-                android:onClick="setDimension"/>
-            <Button 
-                android:id="@+id/dimension4Button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="4x4"
-                android:onClick="setDimension"/>
-            <Button 
-                android:id="@+id/dimension5Button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="5x5"
-                android:onClick="setDimension"/>
-            <Button 
-                android:id="@+id/dimension6Button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="6x6"
-                android:onClick="setDimension"/>
-        </LinearLayout>
-        
-        <LinearLayout 
+        android:layout_below="@id/dotView"
+        android:orientation="vertical" >
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <SeekBar
+                android:id="@+id/dimensionSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:progress="2"
+                android:max="13" />
+
+            <TextView
+                android:id="@+id/dimensionTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/dimensionSeekBar"
+                android:text="5" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/save"
-                android:onClick="saveResult" />
+                android:onClick="saveResult"
+                android:text="@string/save" />
         </LinearLayout>
-        
     </LinearLayout>
 
 </RelativeLayout>

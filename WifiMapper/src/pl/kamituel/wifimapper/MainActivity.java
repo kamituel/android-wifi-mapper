@@ -27,6 +27,9 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity implements ActionBar.OnNavigationListener {
@@ -63,10 +66,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
                                 getString(R.string.title_section3),
                         }),
                 this);
-    }
-
-    public void setDimension(View v) {
-    	mCurrentFragment.setDimension(v);
     }
     
     public void saveResult(View v) {
@@ -133,9 +132,38 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main_dummy, container, false);
+            final View rootView = inflater.inflate(R.layout.fragment_main_dummy, container, false);
+            final int MIN_DIMENSION = 3;
+            
             
             mDotView = (DotSquareView) rootView.findViewById(R.id.dotView);
+            SeekBar dimensionSeekBar = (SeekBar) rootView.findViewById(R.id.dimensionSeekBar);
+                 
+            dimensionSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+				@Override
+				public void onStopTrackingTouch(SeekBar seekBar) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void onStartTrackingTouch(SeekBar seekBar) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void onProgressChanged(SeekBar seekBar, int progress,
+						boolean fromUser) {
+					TextView dimensionTextView = (TextView) rootView.findViewById(R.id.dimensionTextView);
+					// "+ MIN_DIMENSION" because SeekBar has minimum value = 0 and it's not configurable.
+					mDimension = progress + MIN_DIMENSION;
+					dimensionTextView.setText("" + mDimension);
+					init();
+				}
+			});
+            
+			mDimension = dimensionSeekBar.getProgress() + MIN_DIMENSION;
             
             return rootView;
         }
@@ -149,30 +177,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
 		@Override
 		public void onResume() {
 			super.onResume();
+			init();
 		}
 
-		public void setDimension(View v) {
-        	switch (v.getId()) {
-        	case R.id.dimension3Button:
-        		mDimension = 3;
-        		break;
-        	case R.id.dimension4Button:
-        		mDimension = 4;
-        		break;
-        	case R.id.dimension5Button:
-        		mDimension = 5;
-        		break;
-        	case R.id.dimension6Button:
-        		mDimension = 6;
-        		break;
-        	default:
-        		mDimension = -1;
-        		break;
-        	}
-        	
-        	init();
-        }
-        
 		private void init() {
 			populateDataPoints(mDimension);
         	mDotView.setDots(mDimension, (List<Dot>)(List<?>) mDataPoints);

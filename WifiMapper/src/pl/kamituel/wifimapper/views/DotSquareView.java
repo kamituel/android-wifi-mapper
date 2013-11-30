@@ -27,6 +27,7 @@ implements SurfaceView.OnTouchListener, SurfaceHolder.Callback {
 	private SelfState mState;
 	
 	private Circle[] mCircles;
+	private int mDimension;
 
 	public DotSquareView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -53,11 +54,15 @@ implements SurfaceView.OnTouchListener, SurfaceHolder.Callback {
 			Log.e(TAG, "Invalid dimension " + dimension + " for list of size " + dots.size());
 		}
 		
+		mDimension = dimension;
 		mCircles = new Circle[dots.size()];
 		for (int d = 0; d < dots.size(); d += 1) {
 			mCircles[d] = new Circle(dots.get(d), dimension, d);
 		}
 		
+		if (mState != null) {
+			recalculateState(mState.width, mState.height);
+		}
 		postInvalidate();
 	}
 	
@@ -223,6 +228,22 @@ implements SurfaceView.OnTouchListener, SurfaceHolder.Callback {
 
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+		recalculateState(width, height);
+	}
+
+	@Override
+	public void surfaceCreated(SurfaceHolder holder) {
+		Log.d("xxx", "surfaceCreated(holder)");
+		//new AnimateThread().start();
+	}
+
+	@Override
+	public void surfaceDestroyed(SurfaceHolder holder) {
+		// TODO Auto-generated method stub
+
+	}
+	
+	private void recalculateState(int width, int height) {
 		mState = new SelfState();
 
 		mState.width = width;
@@ -233,6 +254,12 @@ implements SurfaceView.OnTouchListener, SurfaceHolder.Callback {
 
 		float dot_w = mDotRadius * width;
 		float dot_h = mDotRadius * height;
+		
+		//if (dot_w * mDimension > width) {
+			dot_w = (int) (width / mDimension);
+			dot_h = (int) (height / mDimension);
+		//}
+		
 		mState.dot_ring = new RectF(-dot_w / 2, -dot_h / 2, dot_w / 2, dot_h / 2);
 		
 		mState.dot_ring_empty_paint.setStyle(Paint.Style.STROKE);
@@ -262,18 +289,6 @@ implements SurfaceView.OnTouchListener, SurfaceHolder.Callback {
 		mState.label_text_selected.setStrokeWidth(1);
 		mState.label_text_selected.setColor(Color.WHITE);
 		mState.label_text_selected.setTextSize(mDotRadius / 2 * width);
-	}
-
-	@Override
-	public void surfaceCreated(SurfaceHolder holder) {
-		Log.d("xxx", "surfaceCreated(holder)");
-		//new AnimateThread().start();
-	}
-
-	@Override
-	public void surfaceDestroyed(SurfaceHolder holder) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
