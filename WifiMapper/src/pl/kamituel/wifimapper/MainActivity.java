@@ -182,16 +182,15 @@ public class MainActivity extends FragmentActivity {
 					Iterator<List<ScanResult>> measurementsIt = point.getMeasurements().iterator();
 					while (measurementsIt.hasNext()) {
 						Iterator<ScanResult> mIt = measurementsIt.next().iterator();
-						
 						JSONArray networks = new JSONArray();
 						while (mIt.hasNext()) {
 							ScanResult scan = mIt.next();
 							JSONObject scanJson = new JSONObject();
-							scanJson.put("bssid", scan.BSSID);
+							scanJson.put("bssid", scan.BSSID != null ? scan.BSSID : "null");
 							scanJson.put("frequency", scan.frequency);
 							scanJson.put("level", scan.level);
 							scanJson.put("timestamp", scan.timestamp);
-							scanJson.put("ssid", scan.SSID);
+							scanJson.put("ssid", scan.SSID != null ? scan.SSID : "null");
 							networks.put(scanJson);
 						}
 						measurements.put(networks);
@@ -227,6 +226,9 @@ public class MainActivity extends FragmentActivity {
 				}*/
 			} catch (JSONException e) {
 				Toast.makeText(getActivity(), "JSON error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+				Log.e(TAG, "", e);
+			} catch (Exception e) {
+				Toast.makeText(getActivity(), "Exeption: " + e.getMessage() + " of type " + e.getClass().getCanonicalName(), Toast.LENGTH_LONG).show();
 				Log.e(TAG, "", e);
 			}
 		}
