@@ -32,7 +32,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends FragmentActivity implements ActionBar.OnNavigationListener {
+public class MainActivity extends FragmentActivity {
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -47,65 +47,24 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // Set up the action bar to show a dropdown list.
-        final ActionBar actionBar = getActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-
-        // Set up the dropdown list navigation in the action bar.
-        actionBar.setListNavigationCallbacks(
-                // Specify a SpinnerAdapter to populate the dropdown list.
-                new ArrayAdapter<String>(
-                        actionBar.getThemedContext(),
-                        android.R.layout.simple_list_item_1,
-                        android.R.id.text1,
-                        new String[] {
-                                getString(R.string.title_section1),
-                                getString(R.string.title_section2),
-                                getString(R.string.title_section3),
-                        }),
-                this);
+        
+        mCurrentFragment = new DummySectionFragment();
+        Bundle args = new Bundle();
+        args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, 1);
+        mCurrentFragment.setArguments(args);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, mCurrentFragment)
+                .commit();
     }
     
     public void saveResult(View v) {
     	mCurrentFragment.saveResult(v);
-    }
- 
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        // Restore the previously serialized current dropdown position.
-        if (savedInstanceState.containsKey(STATE_SELECTED_NAVIGATION_ITEM)) {
-            getActionBar().setSelectedNavigationItem(
-                    savedInstanceState.getInt(STATE_SELECTED_NAVIGATION_ITEM));
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        // Serialize the current dropdown position.
-        outState.putInt(STATE_SELECTED_NAVIGATION_ITEM,
-                getActionBar().getSelectedNavigationIndex());
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-    
-    @Override
-    public boolean onNavigationItemSelected(int position, long id) {
-        // When the given dropdown item is selected, show its contents in the
-        // container view.
-        mCurrentFragment = new DummySectionFragment();
-        Bundle args = new Bundle();
-        args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
-        mCurrentFragment.setArguments(args);
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, mCurrentFragment)
-                .commit();
         return true;
     }
 
@@ -253,11 +212,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
 						c.get(Calendar.HOUR_OF_DAY),
 						c.get(Calendar.MINUTE),
 						c.get(Calendar.SECOND));
-				boolean saved = saveFile(filename, result.toString());
+				String saved = saveFile(filename, result.toString());
 				
-				if (saved) {
-					Toast.makeText(getActivity(), "saved as " + filename, Toast.LENGTH_LONG).show();
+				if (saved != null) {
+					Toast.makeText(getActivity(), "saved as " + saved, Toast.LENGTH_LONG).show();
 					init();
+				} else {
+					Toast.makeText(getActivity(), "Could not save", Toast.LENGTH_LONG).show();
 				}
 			} catch (JSONException e) {
 				Toast.makeText(getActivity(), "JSON error: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -265,8 +226,39 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
 			}
 		}
 		
-		private boolean saveFile(String filename, String contents) {
+		private String saveFile(String filename, String contents) {
+			try {
+				String saved = saveFileExternal(filename, contents);
+				if (saved != null) {
+					return saved;
+				}
+			} catch (Exception e) {
+				Log.e(TAG, "Writing external", e);
+			}
+			
+			try {
+				String saved = saveFileInternal(filename, contents);
+				if (saved != null) {
+					return saved;
+				}
+			} catch (Exception e) {
+				Log.e(TAG, "Writing internal", e);
+			}
+			
+			return null;
+		}
+		
+		private String saveFileInternal(String filename, String contents) {
+			File out = new File(getActivity().getFilesDir() + File.separator + filename);
+			return _saveFile(out, contents);
+		}
+		
+		private String saveFileExternal(String filename, String contents) {
 			File out = new File(Environment.getExternalStorageDirectory(), filename);
+			return _saveFile(out, contents);
+		}
+		
+		private String _saveFile(File out, String contents) {
 			FileWriter writer = null;
 			try {
 				writer = new FileWriter(out, false);
@@ -275,7 +267,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
 			} catch (IOException e) {
 				Toast.makeText(getActivity(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
 				Log.e(TAG, "" ,e);
-				return false;
+				return null;
 			} finally {
 				if (writer != null) {
 					try {
@@ -286,7 +278,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
 				}
 			}
 			
-			return true;
+			return out.getAbsolutePath();
 		}
     }
 }
