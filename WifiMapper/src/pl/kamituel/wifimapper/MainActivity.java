@@ -15,7 +15,7 @@ import org.json.JSONObject;
 import pl.kamituel.wifimapper.WifiScanner.OnWifiScan;
 import pl.kamituel.wifimapper.views.Dot;
 import pl.kamituel.wifimapper.views.DotSquareView;
-import android.app.ActionBar;
+import android.content.Intent;
 import android.net.wifi.ScanResult;
 import android.os.Bundle;
 import android.os.Environment;
@@ -26,7 +26,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -204,7 +203,13 @@ public class MainActivity extends FragmentActivity {
 				Log.d(TAG, "RESULT");
 				Log.d(TAG, result.toString());
 				
-				Calendar c = Calendar.getInstance();
+				Intent sendIntent = new Intent();
+				sendIntent.setAction(Intent.ACTION_SEND);
+				sendIntent.putExtra(Intent.EXTRA_TEXT, result.toString());
+				sendIntent.setType("application/json");
+				startActivity(sendIntent);
+				
+				/*Calendar c = Calendar.getInstance();
 				String filename = String.format("%4d-%02d-%02d_%02d_%02d_%02d.json", 
 						c.get(Calendar.YEAR), 
 						c.get(Calendar.MONTH) + 1, 
@@ -219,14 +224,14 @@ public class MainActivity extends FragmentActivity {
 					init();
 				} else {
 					Toast.makeText(getActivity(), "Could not save", Toast.LENGTH_LONG).show();
-				}
+				}*/
 			} catch (JSONException e) {
 				Toast.makeText(getActivity(), "JSON error: " + e.getMessage(), Toast.LENGTH_LONG).show();
 				Log.e(TAG, "", e);
 			}
 		}
 		
-		private String saveFile(String filename, String contents) {
+		/*private String saveFile(String filename, String contents) {
 			try {
 				String saved = saveFileExternal(filename, contents);
 				if (saved != null) {
@@ -279,6 +284,6 @@ public class MainActivity extends FragmentActivity {
 			}
 			
 			return out.getAbsolutePath();
-		}
+		}*/
     }
 }
