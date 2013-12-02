@@ -230,6 +230,9 @@ public class MainActivity extends FragmentActivity {
 			} catch (Exception e) {
 				Toast.makeText(getActivity(), "Exeption: " + e.getMessage() + " of type " + e.getClass().getCanonicalName(), Toast.LENGTH_LONG).show();
 				Log.e(TAG, "", e);
+			} catch (Throwable e) {
+				Toast.makeText(getActivity(), "Exeption: " + e.getMessage() + " of type " + e.getClass().getCanonicalName(), Toast.LENGTH_LONG).show();
+				Log.e(TAG, "", e);
 			}
 		}
 		
