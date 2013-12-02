@@ -189,7 +189,7 @@ public class MainActivity extends FragmentActivity {
 							scanJson.put("bssid", scan.BSSID != null ? scan.BSSID : "null");
 							scanJson.put("frequency", scan.frequency);
 							scanJson.put("level", scan.level);
-							scanJson.put("timestamp", scan.timestamp);
+							//scanJson.put("timestamp", scan.timestamp);
 							scanJson.put("ssid", scan.SSID != null ? scan.SSID : "null");
 							networks.put(scanJson);
 						}
